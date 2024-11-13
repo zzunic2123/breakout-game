@@ -3,20 +3,18 @@ const ctx = canvas.getContext('2d');
 canvas.width = 800;
 canvas.height = 600;
 
-const paddleHeight = 10;
-const paddleWidth = 100;
+let paddleHeight = 10;
+let paddleWidth = 100;
 let paddleX = (canvas.width - paddleWidth) / 2;
 
 const ballRadius = 8;
 let x = canvas.width / 2;
 let y = canvas.height - 30;
-const speed = 4;
-const randomAngle = (Math.random() * (Math.PI / 3)) + (Math.PI / 6);
-let dx = Math.random() < 0.5 ? speed * Math.cos(randomAngle) : -speed * Math.cos(randomAngle);
-let dy = -speed * Math.sin(randomAngle);
+let speed;
+let dx, dy;
 
-const brickRowCount = 7;
-const brickColumnCount = 4;
+let brickRowCount;
+let brickColumnCount;
 const brickWidth = 75;
 const brickHeight = 20;
 const brickPadding = 10;
@@ -24,18 +22,11 @@ const brickOffsetTop = 30;
 const brickOffsetLeft = 35;
 
 let bricks = [];
-for (let c = 0; c < brickColumnCount; c++) {
-    bricks[c] = [];
-    for (let r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = { x: 0, y: 0, status: 1 };
-    }
-}
-
 let score = 0;
 let highScore = localStorage.getItem('highScore') || 0;
-
 let rightPressed = false;
 let leftPressed = false;
+let gameOver = false;
 
 document.addEventListener('keydown', keyDownHandler);
 document.addEventListener('keyup', keyUpHandler);
@@ -62,6 +53,31 @@ function keyUpHandler(e) {
         rightPressed = false;
     } else if (e.key === 'Left' || e.key === 'ArrowLeft') {
         leftPressed = false;
+    }
+}
+
+function startGame() {
+    brickRowCount = parseInt(document.getElementById('brickRows').value);
+    brickColumnCount = parseInt(document.getElementById('brickCols').value);
+    speed = parseFloat(document.getElementById('ballSpeed').value);
+
+    const randomAngle = (Math.random() * (Math.PI / 3)) + (Math.PI / 6);
+    dx = Math.random() < 0.5 ? speed * Math.cos(randomAngle) : -speed * Math.cos(randomAngle);
+    dy = -speed * Math.sin(randomAngle);
+
+    createBricks();
+    document.getElementById('configForm').style.display = 'none';
+    canvas.style.display = 'block';
+    draw();
+}
+
+function createBricks() {
+    bricks = [];
+    for (let c = 0; c < brickColumnCount; c++) {
+        bricks[c] = [];
+        for (let r = 0; r < brickRowCount; r++) {
+            bricks[c][r] = { x: 0, y: 0, status: 1 };
+        }
     }
 }
 
@@ -117,7 +133,7 @@ function collisionDetection() {
                         localStorage.setItem('highScore', highScore);
                     }
                     if (backgroundMusic.playbackRate < 1.5) {
-                        backgroundMusic.playbackRate += 0.02; // Increase playback rate
+                        backgroundMusic.playbackRate += 0.02;
                     }
                     if (score === brickRowCount * brickColumnCount) {
                         displayEndMessage('YOU WIN, CONGRATULATIONS!');
@@ -136,7 +152,6 @@ function drawScore() {
     ctx.fillText('Score: ' + score, canvas.width - 100, 20);
     ctx.fillText('High Score: ' + highScore, canvas.width - 250, 20);
 }
-let gameOver = false;
 
 function displayEndMessage(message) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -145,7 +160,7 @@ function displayEndMessage(message) {
     ctx.textAlign = 'center';
     ctx.fillText(message, canvas.width / 2, canvas.height / 2);
     createRestartButton();
-    gameOver = true; // Set the flag to true when the game ends
+    gameOver = true;
 }
 
 function createRestartButton() {
@@ -160,7 +175,7 @@ function createRestartButton() {
 }
 
 function draw() {
-    if (gameOver) return; // Stop the game loop if the game is over
+    if (gameOver) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBricks();
@@ -197,5 +212,3 @@ function draw() {
     y += dy;
     requestAnimationFrame(draw);
 }
-
-draw();

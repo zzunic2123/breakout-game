@@ -8,7 +8,17 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <canvas id="gameCanvas"></canvas>
+    <div id="configForm">
+        <h2>Configure Game Settings</h2>
+        <label for="brickRows">Number of Brick Rows:</label>
+        <input type="number" id="brickRows" value="4" min="1" max="10"><br><br>
+        <label for="brickCols">Number of Brick Columns:</label>
+        <input type="number" id="brickCols" value="7" min="1" max="10"><br><br>
+        <label for="ballSpeed">Initial Ball Speed:</label>
+        <input type="number" id="ballSpeed" value="4" min="1" max="10"><br><br>
+        <button onclick="startGame()">Start Game</button>
+    </div>
+    <canvas id="gameCanvas" style="display:none;"></canvas>
     <script src="js/game.js"></script>
 </body>
 </html>
